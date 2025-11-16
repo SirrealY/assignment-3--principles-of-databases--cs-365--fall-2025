@@ -90,13 +90,13 @@ function insertEntry($siteName, $url, $email, $username, $password, $comment) {
             DBPASS
         );
 
-        userId = null;
+        $userId = null;
 
         $sqlUser = 'SELECT user_id FROM users WHERE email = :email';
         $statement = $db->prepare($sqlUser);
-        statement->execute([':email' => $email]);
+        $statement->execute([':email' => $email]);
         $row = $statement->fetch(PDO::FETCH_ASSOC);
-        statement = null;
+        $statement = null;
 
         if ($row) {
             // User exists, get user_id and reuse it
@@ -106,8 +106,8 @@ function insertEntry($siteName, $url, $email, $username, $password, $comment) {
                 INSERT INTO users (username, first_name, last_name, email)
                 VALUES (:username, '', '', :email)
             ";
-            statement = $db->prepare($insertUser);
-            statement->execute([
+            $statement = $db->prepare($insertUser);
+            $statement->execute([
                 ':username' => $username,
                 ':email' => $email
             ]);
@@ -116,9 +116,55 @@ function insertEntry($siteName, $url, $email, $username, $password, $comment) {
         }
 
         //
-        $
+        $websiteId = null;
+        $sqlWebsite = 'SELECT wbesite_id FROM websites WHERE url = :url';
+        $statement = $db->prepare($sqlWebsite);
+        $statement->execute([':url' => $url]);
+        $row = $statement->fetch(PDO::FETCH_ASSOC);
+        $statement = null;
+
+        if($row) {
+            $websiteID = (int)$row['website_id'];
+        } else {
+            $insertSite = "
+                INSERT INTO websites (url, name)
+                VALUES (:url, :name)
+            ";
+            $statement = $db->prepare($insertSite);
+            $statement->execute([
+                ':url' => $url,
+                ':name' => $siteName,
+            ]);
+            $websiteId = (int)$db->lastInsertId();
+            $statement = null;
+        }
+
+        $insertCred = "
+            INSER INTO credentials (
+                user_id, website_id, site_username, url, passwords_enc, comment
+            )
+            VALUES (
+                :user_id, :website_id, :site_username, :url, AES_ENCRYPT(:password, @key_str, @init_vector), :comment
+            )
+        ";
+
+        $statement = $db->prepare($insertCred);
+        $statement->execute([
+            'user_id' => $userId,
+            'website_id' => $websiteId,
+            'site_username' => $username,
+            'url' => $url,
+            'password' => $password,
+            'comment' => $comment
+         ]);
+         $statement = null;
+         return true;
 
     } catch (PDOException $error) {
-
+        //If we reach this point connection was unsuccessful
+        echo "<p class='highlight'>Oh no! The Function <code>insertEntry</code> has failed to execute.</p?";
+        echo "<pre>$error</pre>";
+        echo "<p> class= 'highlight'> Exiting...</p>";
+        exit;
     }
 }
