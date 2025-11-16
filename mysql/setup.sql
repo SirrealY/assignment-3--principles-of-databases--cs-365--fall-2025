@@ -22,7 +22,7 @@ SET block_encryption_mode = 'aes-256-cbc';
 SET @key_str = UNHEX(SHA2('SEUZ', 512));
 SET @init_vector = RANDOM_BYTES(16);
 
--- Create Table
+-- Create Tables
 
 CREATE TABLE IF NOT EXISTS users (
   user_id    INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
