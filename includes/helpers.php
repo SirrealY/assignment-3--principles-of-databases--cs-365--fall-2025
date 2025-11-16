@@ -208,6 +208,7 @@ function updateEntry($siteNamePattern, $newUrl) {
         $statement = $db->prepare($updateCredentials);
         $statement->execute([
             'site_name' => $like,
+
         ]);
         $statement = null;
 
