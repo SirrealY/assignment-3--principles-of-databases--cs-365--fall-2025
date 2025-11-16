@@ -66,7 +66,7 @@ function searchCredentials() {
 
         $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
 
-        $statement = null; 
+        $statement = null;
 
         return $rows;
 
@@ -76,6 +76,49 @@ function searchCredentials() {
         echo "<pre>$error</pre>";
         echo "<p> class= 'highlight'> Exiting...</p>";
         exit;
+
+    }
+}
+
+function insertEntry($siteName, $url, $email, $username, $password, $comment) {
+    try {
+        include_once 'config.php';
+
+        $db = new PDO (
+            "mysql:host=" . DBHOST . ";dbname=" . DBNAME . ";charset=utf8mb4",
+            DBUSER,
+            DBPASS
+        );
+
+        userId = null;
+
+        $sqlUser = 'SELECT user_id FROM users WHERE email = :email';
+        $statement = $db->prepare($sqlUser);
+        statement->execute([':email' => $email]);
+        $row = $statement->fetch(PDO::FETCH_ASSOC);
+        statement = null;
+
+        if ($row) {
+            // User exists, get user_id and reuse it
+            $userId = (int)$row['user_id'];
+        } else {
+            $insertUser = "
+                INSERT INTO users (username, first_name, last_name, email)
+                VALUES (:username, '', '', :email)
+            ";
+            statement = $db->prepare($insertUser);
+            statement->execute([
+                ':username' => $username,
+                ':email' => $email
+            ]);
+            $userId = (int)$db->lastInsertId();
+            $statement = null;
+        }
+
+        //
+        $
+
+    } catch (PDOException $error) {
 
     }
 }
