@@ -27,7 +27,7 @@ function dbTestConnection() {
     }
 }
 
-function searchCredentials() {
+function searchCredentials($term) {
     try {
         include_once 'config.php';
 
@@ -62,7 +62,7 @@ function searchCredentials() {
         ';
 
         $statement = $db->prepare($sql);
-        $statement->execute([':term' => $like]);
+        $statement->execute(['term' => $like]);
 
         $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
 
@@ -74,7 +74,7 @@ function searchCredentials() {
         //If we reach this point connection was unsuccessful
         echo "<p class='highlight'>Oh no! The Function <code>searchCredentials</code> has failed to execute.</p?";
         echo "<pre>$error</pre>";
-        echo "<p> class= 'highlight'> Exiting...</p>";
+        echo "<p> class='highlight'> Exiting...</p>";
         exit;
 
     }
@@ -94,7 +94,7 @@ function insertEntry($siteName, $url, $email, $username, $password, $comment) {
 
         $sqlUser = 'SELECT user_id FROM users WHERE email = :email';
         $statement = $db->prepare($sqlUser);
-        $statement->execute([':email' => $email]);
+        $statement->execute(['email' => $email]);
         $row = $statement->fetch(PDO::FETCH_ASSOC);
         $statement = null;
 
@@ -108,8 +108,8 @@ function insertEntry($siteName, $url, $email, $username, $password, $comment) {
             ";
             $statement = $db->prepare($insertUser);
             $statement->execute([
-                ':username' => $username,
-                ':email' => $email
+                'username' => $username,
+                'email' => $email
             ]);
             $userId = (int)$db->lastInsertId();
             $statement = null;
@@ -117,14 +117,14 @@ function insertEntry($siteName, $url, $email, $username, $password, $comment) {
 
         //
         $websiteId = null;
-        $sqlWebsite = 'SELECT wbesite_id FROM websites WHERE url = :url';
+        $sqlWebsite = 'SELECT website_id FROM websites WHERE url = :url';
         $statement = $db->prepare($sqlWebsite);
         $statement->execute([':url' => $url]);
         $row = $statement->fetch(PDO::FETCH_ASSOC);
         $statement = null;
 
         if($row) {
-            $websiteID = (int)$row['website_id'];
+            $websiteId = (int)$row['website_id'];
         } else {
             $insertSite = "
                 INSERT INTO websites (url, name)
@@ -140,11 +140,11 @@ function insertEntry($siteName, $url, $email, $username, $password, $comment) {
         }
 
         $insertCred = "
-            INSER INTO credentials (
+            INSERT INTO credentials (
                 user_id, website_id, site_username, url, passwords_enc, comment
             )
             VALUES (
-                :user_id, :website_id, :site_username, :url, AES_ENCRYPT(:password, @key_str, @init_vector), :comment
+                :user_id, :website_id, :site_username, :url, AES_ENCRYPT(:password, UNHEX(SHA2('SEUZ', 512))), :comment
             )
         ";
 
@@ -163,6 +163,59 @@ function insertEntry($siteName, $url, $email, $username, $password, $comment) {
     } catch (PDOException $error) {
         //If we reach this point connection was unsuccessful
         echo "<p class='highlight'>Oh no! The Function <code>insertEntry</code> has failed to execute.</p?";
+        echo "<pre>$error</pre>";
+        echo "<p> class='highlight'> Exiting...</p>";
+        exit;
+    }
+}
+
+function updateEntry($siteNamePattern, $newUrl) {
+    try {
+        include_once 'config.php';
+
+        $db = new PDO (
+            "mysql:host=" . DBHOST . ";dbname=" . DBNAME . ";charset=utf8mb4",
+            DBUSER,
+            DBPASS
+        );
+        $like = '%' . $siteNamePattern . '%';
+
+        $updateWebsites = "
+            UPDATE websites
+            SET url = :new_url
+            WHERE name LIKE :site_name_pattern
+        ";
+
+        $statement = $db->prepare($updateWebsites);
+        $statement->execute([
+            ':new_url' => $newUrl,
+            ':site_name_pattern' => $like
+        ]);
+        $rowsAffected = $statement->rowCount();
+        $statement = null;
+
+        if ($rowsAffected === 0) {
+            return false;
+        }
+
+        $updateCredentials = "
+            UPDATE credentials AS c
+            JOIN websites AS w ON c.website_id = w.website_id
+            SET c.url = :new_url
+            WHERE w.name LIKE :site_name
+        ";
+
+        $statement = $db->prepare($updateCredentials);
+        $statement->execute([
+            'site_name' => $like,
+        ]);
+        $statement = null;
+
+        return true;
+
+    } catch (PDOException $error) {
+        //If we reach this point connection was unsuccessful
+        echo "<p class='highlight'>Oh no! The Function <code>updateEntry</code> has failed to execute.</p?";
         echo "<pre>$error</pre>";
         echo "<p> class= 'highlight'> Exiting...</p>";
         exit;
