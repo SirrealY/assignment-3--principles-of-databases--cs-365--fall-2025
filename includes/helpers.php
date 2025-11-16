@@ -19,7 +19,7 @@ function dbTestConnection() {
 
     } catch (PDOException $error) {
         //If we reach this point connection was unsuccessful
-        echo "<p class='highlight'>Oh no! The Function <code>dbTestConnection</code> has failed to execute.</p?";
+        echo "<p class='highlight'>Oh no! The Function <code>dbTestConnection</code> has failed to execute.</p>";
         echo "<pre>$error</pre>";
         echo "<p> class= 'highlight'> Exiting...</p>";
         exit;
@@ -72,7 +72,7 @@ function searchCredentials($term) {
 
     } catch (PDOException $error) {
         //If we reach this point connection was unsuccessful
-        echo "<p class='highlight'>Oh no! The Function <code>searchCredentials</code> has failed to execute.</p?";
+        echo "<p class= 'highlight'>Oh no! The Function <code>searchCredentials</code> has failed to execute.</p>";
         echo "<pre>$error</pre>";
         echo "<p> class='highlight'> Exiting...</p>";
         exit;
@@ -119,7 +119,7 @@ function insertEntry($siteName, $url, $email, $username, $password, $comment) {
         $websiteId = null;
         $sqlWebsite = 'SELECT website_id FROM websites WHERE url = :url';
         $statement = $db->prepare($sqlWebsite);
-        $statement->execute([':url' => $url]);
+        $statement->execute(['url' => $url]);
         $row = $statement->fetch(PDO::FETCH_ASSOC);
         $statement = null;
 
@@ -132,8 +132,8 @@ function insertEntry($siteName, $url, $email, $username, $password, $comment) {
             ";
             $statement = $db->prepare($insertSite);
             $statement->execute([
-                ':url' => $url,
-                ':name' => $siteName,
+                'url' => $url,
+                'name' => $siteName,
             ]);
             $websiteId = (int)$db->lastInsertId();
             $statement = null;
@@ -162,7 +162,7 @@ function insertEntry($siteName, $url, $email, $username, $password, $comment) {
 
     } catch (PDOException $error) {
         //If we reach this point connection was unsuccessful
-        echo "<p class='highlight'>Oh no! The Function <code>insertEntry</code> has failed to execute.</p?";
+        echo "<p class= 'highlight'>Oh no! The Function <code>insertEntry</code> has failed to execute.</p>";
         echo "<pre>$error</pre>";
         echo "<p> class='highlight'> Exiting...</p>";
         exit;
@@ -188,8 +188,8 @@ function updateEntry($siteNamePattern, $newUrl) {
 
         $statement = $db->prepare($updateWebsites);
         $statement->execute([
-            ':new_url' => $newUrl,
-            ':site_name_pattern' => $like
+            'new_url' => $newUrl,
+            'site_name_pattern' => $like
         ]);
         $rowsAffected = $statement->rowCount();
         $statement = null;
@@ -201,7 +201,7 @@ function updateEntry($siteNamePattern, $newUrl) {
         $updateCredentials = "
             UPDATE credentials AS c
             JOIN websites AS w ON c.website_id = w.website_id
-            SET c.url = :new_url
+            SET c.url = w.url
             WHERE w.name LIKE :site_name
         ";
 
@@ -211,14 +211,55 @@ function updateEntry($siteNamePattern, $newUrl) {
 
         ]);
         $statement = null;
-
         return true;
 
     } catch (PDOException $error) {
         //If we reach this point connection was unsuccessful
-        echo "<p class='highlight'>Oh no! The Function <code>updateEntry</code> has failed to execute.</p?";
+        echo "<p class= 'highlight'>Oh no! The Function <code>updateEntry</code> has failed to execute.</p>";
         echo "<pre>$error</pre>";
         echo "<p> class= 'highlight'> Exiting...</p>";
         exit;
+    }
+}
+
+function deleteEntry($term) {
+    try {
+        include_once 'config.php';
+
+        $db = new PDO(
+            "mysql:host=" . DBHOST . ";dbname=" . DBNAME . ";charset=utf8mb4",
+            DBUSER,
+            DBPASS
+        );
+
+        $like = '%' . $term . '%';
+
+        $sql = '
+            DELETE c
+            FROM credentials AS c
+            JOIN users AS u ON c.user_id = u.user_id
+            JOIN websites AS w ON c.website_id = w.website_id
+            WHERE u.username LIKE :term
+                OR u.email LIKE :term
+                OR w.name LIKE :term
+                OR c.url LIKE :term
+                OR c.site_username LIKE :term
+                OR c.comment LIKE :term
+        ';
+        $statement = $db->prepare($sql);
+        $statement->execute(['term' => $like]);
+
+        $rowsDeleted = $statement->rowCount();
+        $statement = null;
+
+        return $rowsDeleted;
+
+    } catch (PDOException $error) {
+        //If we reach this point, connection was unsuccessful
+        echo "<p class= 'highlight'>Oh no! The Function <code>deleteEntry</code> has failed to execute.</p>";
+        echo "<pre>$error</pre>";
+        echo "<p> class='highlight'> Exiting...</p>";
+        exit;
+
     }
 }
