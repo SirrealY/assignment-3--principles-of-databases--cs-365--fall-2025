@@ -11,6 +11,7 @@ $searchPerformed = false;
 
 $insertMessage = '';
 $updateMessage = '';
+$deleteMessage = '';
 
 // -- Search Functionality --
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['search_submit'])) {
@@ -70,6 +71,21 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_submit'])) {
 }
 
 // -- Delete Functionality --
+if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_submit'])) {
+    $deleteTerm = trim($_POST['delete_term'] ?? '');
+
+    if($deleteTerm === '') {
+        $deleteMessage = "Please enter a term to delete by";
+    } else {
+        $rowsDeleted = deleteEntry($deleteTerm);
+
+        if($rowsDeleted > 0) {
+            $deleteMessage = "Deleted {$rowsDeleted} entries matching '{$deleteTerm}'.";
+        } else {
+            $deleteMessage = "No entries found matching '{$deleteTerm}'. You're safe for now.";
+        }
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -228,6 +244,30 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_submit'])) {
             </div>
 
             <button type="submit" name="update_submit">Update Entry</button>
+        </form>
+    </section>
+
+    <!-- Delete Entry Form -->
+    <section>
+        <h2> Delete Entries</h2>
+        <p> Delete entries matching the provided username, email, site name, URL, site username, or comment.</p>
+
+        <?php if ($deleteMessage !== ''): ?>
+            <p class='highlight'><?php echo htmlspecialchars($deleteMessage); ?></p>
+        <?php endif; ?>
+
+        <form method="post">
+            <div>
+                <label for="delete_term">Delete Term (pattern):</label>
+                <input
+                    type="text"
+                    id="delete_term"
+                    name="delete_term"
+                    required
+                >
+            </div>
+
+            <button type="submit" name="delete_submit">Delete Entries</button>
         </form>
     </section>
 </main>
