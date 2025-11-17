@@ -216,7 +216,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_submit'])) {
     <!-- Update Entry Form -->
     <section>
         <h2> Update Entry by Site / App Name</h2>
-        <p> Update the URL for any website whos name matches the provivded pattern.</p>
+        <p> Update the URL for any website whose name matches the provided pattern.</p>
 
         <?php if ($updateMessage !== ''): ?>
             <p class='highlight'><?php echo htmlspecialchars($updateMessage); ?></p>

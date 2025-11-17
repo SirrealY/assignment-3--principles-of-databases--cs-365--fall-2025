@@ -69,3 +69,12 @@ em {
 .database-result {
   box-shadow: 2px 2px 3px rgb(220, 120, 120);
 }
+
+.highlight {
+  background-color: #fff3cd;
+  color: #856404;
+  padding: 10px 14px;
+  border: 1px solid #ffeeba;
+  border-radius: 4px;
+  margin: 12px 0;
+}
