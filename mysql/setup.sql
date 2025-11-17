@@ -13,8 +13,8 @@ USE student_passwords;
 -- Create database user and grant permissions
 
 DROP USER IF EXISTS 'passwords_user'@'localhost';
-CREATE USER 'passwords_user'@'localhost'
-GRANT ALL PRIVILEGES ON student_passwords.* TO 'passwords_user'@'localhost'
+CREATE USER 'passwords_user'@'localhost' IDENTIFIED BY '';
+GRANT ALL PRIVILEGES ON student_passwords.* TO 'passwords_user'@'localhost';
 FLUSH PRIVILEGES;
 
 -- Setup Password Encryption
