@@ -267,7 +267,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_submit'])) {
                 >
             </div>
 
-            <button type="submit" name="delete_submit">Delete Entries</button>
+            <button type="submit" name="delete_submit">Delete Entry</button>
         </form>
     </section>
 </main>
