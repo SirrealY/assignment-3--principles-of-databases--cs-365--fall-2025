@@ -143,14 +143,14 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_submit'])) {
                 <?php if (count($searchResults) > 0): ?>
                     <?php foreach ($searchResults as $row): ?>
                         <tr>
-                            <td><?php echo htmlspecialchars($row['credential_id']); ?></td>
-                            <td><?php echo htmlspecialchars($row['username']); ?></td>
-                            <td><?php echo htmlspecialchars($row['email']); ?></td>
-                            <td><?php echo htmlspecialchars($row['site_name']); ?></td>
-                            <td><?php echo htmlspecialchars($row['site_username']); ?></td>
-                            <td><?php echo htmlspecialchars($row['url']); ?></td>
-                            <td><?php echo htmlspecialchars($row['comment']); ?></td>
-                            <td><?php echo htmlspecialchars($row['created_at']); ?></td>
+                            <td><?php echo htmlspecialchars($row['credential_id'] ?? ''); ?></td>
+                            <td><?php echo htmlspecialchars($row['username'] ?? ''); ?></td>
+                            <td><?php echo htmlspecialchars($row['email'] ?? ''); ?></td>
+                            <td><?php echo htmlspecialchars($row['site_name'] ?? ''); ?></td>
+                            <td><?php echo htmlspecialchars($row['site_username'] ?? ''); ?></td>
+                            <td><?php echo htmlspecialchars($row['url'] ?? ''); ?></td>
+                            <td><?php echo htmlspecialchars($row['comment'] ?? ''); ?></td>
+                            <td><?php echo htmlspecialchars($row['created_at'] ?? ''); ?></td>
                         </tr>
                     <?php endforeach; ?>
                 <?php else: ?>
