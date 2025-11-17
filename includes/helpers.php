@@ -21,7 +21,7 @@ function dbTestConnection() {
         //If we reach this point connection was unsuccessful
         echo "<p class='highlight'>Oh no! The Function <code>dbTestConnection</code> has failed to execute.</p>";
         echo "<pre>$error</pre>";
-        echo "<p> class= 'highlight'> Exiting...</p>";
+        echo "<p class='highlight'> Exiting...</p>";
         exit;
 
     }
@@ -62,7 +62,7 @@ function searchCredentials($term) {
         ';
 
         $statement = $db->prepare($sql);
-        $statement->execute(['term' => $like]);
+        $statement->execute([':term' => $like]);
 
         $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
 
@@ -72,9 +72,9 @@ function searchCredentials($term) {
 
     } catch (PDOException $error) {
         //If we reach this point connection was unsuccessful
-        echo "<p class= 'highlight'>Oh no! The Function <code>searchCredentials</code> has failed to execute.</p>";
+        echo "<p class='highlight'>Oh no! The Function <code>searchCredentials</code> has failed to execute.</p>";
         echo "<pre>$error</pre>";
-        echo "<p> class='highlight'> Exiting...</p>";
+        echo "<p class='highlight'>Exiting...</p>";
         exit;
 
     }
@@ -94,7 +94,7 @@ function insertEntry($siteName, $url, $email, $username, $password, $comment) {
 
         $sqlUser = 'SELECT user_id FROM users WHERE email = :email';
         $statement = $db->prepare($sqlUser);
-        $statement->execute(['email' => $email]);
+        $statement->execute([':email' => $email]);
         $row = $statement->fetch(PDO::FETCH_ASSOC);
         $statement = null;
 
@@ -108,8 +108,8 @@ function insertEntry($siteName, $url, $email, $username, $password, $comment) {
             ";
             $statement = $db->prepare($insertUser);
             $statement->execute([
-                'username' => $username,
-                'email' => $email
+                ':username' => $username,
+                ':email' => $email
             ]);
             $userId = (int)$db->lastInsertId();
             $statement = null;
@@ -162,9 +162,9 @@ function insertEntry($siteName, $url, $email, $username, $password, $comment) {
 
     } catch (PDOException $error) {
         //If we reach this point connection was unsuccessful
-        echo "<p class= 'highlight'>Oh no! The Function <code>insertEntry</code> has failed to execute.</p>";
+        echo "<p class='highlight'>Oh no! The Function <code>insertEntry</code> has failed to execute.</p>";
         echo "<pre>$error</pre>";
-        echo "<p> class='highlight'> Exiting...</p>";
+        echo "<p class='highlight'>Exiting...</p>";
         exit;
     }
 }
@@ -207,7 +207,7 @@ function updateEntry($siteNamePattern, $newUrl) {
 
         $statement = $db->prepare($updateCredentials);
         $statement->execute([
-            'site_name' => $like,
+            ':site_name' => $like,
 
         ]);
         $statement = null;
@@ -215,9 +215,9 @@ function updateEntry($siteNamePattern, $newUrl) {
 
     } catch (PDOException $error) {
         //If we reach this point connection was unsuccessful
-        echo "<p class= 'highlight'>Oh no! The Function <code>updateEntry</code> has failed to execute.</p>";
+        echo "<p class='highlight'>Oh no! The Function <code>updateEntry</code> has failed to execute.</p>";
         echo "<pre>$error</pre>";
-        echo "<p> class= 'highlight'> Exiting...</p>";
+        echo "<p class='highlight'> Exiting...</p>";
         exit;
     }
 }
@@ -247,7 +247,7 @@ function deleteEntry($term) {
                 OR c.comment LIKE :term
         ';
         $statement = $db->prepare($sql);
-        $statement->execute(['term' => $like]);
+        $statement->execute([':term' => $like]);
 
         $rowsDeleted = $statement->rowCount();
         $statement = null;
@@ -256,9 +256,9 @@ function deleteEntry($term) {
 
     } catch (PDOException $error) {
         //If we reach this point, connection was unsuccessful
-        echo "<p class= 'highlight'>Oh no! The Function <code>deleteEntry</code> has failed to execute.</p>";
+        echo "<p class='highlight'>Oh no! The Function <code>deleteEntry</code> has failed to execute.</p>";
         echo "<pre>$error</pre>";
-        echo "<p> class='highlight'> Exiting...</p>";
+        echo "<p class='highlight'>Exiting...</p>";
         exit;
 
     }
