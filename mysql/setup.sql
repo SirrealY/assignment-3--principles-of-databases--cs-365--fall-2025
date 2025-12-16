@@ -49,10 +49,10 @@ CREATE TABLE IF NOT EXISTS credentials (
   site_username VARCHAR(100)       NOT NULL,
   url           VARCHAR(256)       NOT NULL, -- Redundant but useful for quick lookups
   passwords_enc VARBINARY(512)     NOT NULL,
-  comment VARCHAR(255) DEFAULT NULL,
+  comment VARCHAR(255)             DEFAULT NULL,
   created_at    TIMESTAMP          NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (user_id) REFERENCES users(user_id),
-  FOREIGN KEY (website_id) REFERENCES websites(website_id)
+  FOREIGN KEY (user_id)            REFERENCES users(user_id),
+  FOREIGN KEY (website_id)         REFERENCES websites(website_id)
 );
 
 INSERT INTO users (username, first_name, last_name, email) VALUES
